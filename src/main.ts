@@ -18,7 +18,6 @@ interface State {
 }
 const mainView = document.querySelector<HTMLDivElement>('#app');
 mainView!.innerHTML = `
-<note-card-component id="1" title="Sample Title" description="Sample Description" createdAt="2024-05-22T00:00:00Z"></note-card-component>
   <header class="mx"><note-icon></note-icon><h1>Notes</h1></header>
   <custom-input-component class="mx search-input" placeholder='Search notes...' class="search-input" id='search-input'>
     <magnifying-glass-icon class="search-input-icon" slot='prepend-element'></maginfying-glass-icon>
