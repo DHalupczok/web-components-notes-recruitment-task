@@ -19,12 +19,8 @@ class NoteCardComponent extends HTMLElement {
     _oldValue: string | null,
     newValue: string | null,
   ) {
-    console.warn('Wywołuje się attribute change callback', name, newValue);
     if (name === 'id' && newValue) this.id = newValue;
-    if (name === 'title' && newValue) {
-      console.log('Wjechało nowy title', newValue);
-      this.title = newValue;
-    }
+    if (name === 'title' && newValue) this.title = newValue;
     if (name === 'description' && newValue) this.description = newValue;
     if (name === 'createdAt' && newValue) this.createdAt = new Date(newValue);
     this.render(this.shadowRoot!);
