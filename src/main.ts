@@ -6,38 +6,90 @@ import './components/icons/MagnifyingGlassIcon.ts';
 import './components/icons/AddNoteIcon.ts';
 import './components/icons/NoteIcon.ts';
 import './components/icons/EditNoteIcon.ts';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.ts';
+import './components/CustomButtonComponent.ts';
+import './components/CustomInputComponent.ts';
+import './components/NoteCardComponent.ts';
+import { Note } from './model/note.model.ts';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-  <p>Here i will use my code</p>
-  <hello-world></hello-world>
-  <info-icon></info-icon>
-  <note-icon></note-icon>
-  <trash-icon></trash-icon>
-  <add-note-icon></add-note-icon>
-  <edit-note-icon></edit-note-icon>
-  <magnifying-glass-icon></maginfying-glass-icon>
- 
+interface State {
+  filter: string;
+  notes: Note[];
+  filteredNotes: Note[];
+}
+const mainView = document.querySelector<HTMLDivElement>('#app');
+mainView!.innerHTML = `
+<note-card-component id="1" title="Sample Title" description="Sample Description" createdAt="2024-05-22T00:00:00Z"></note-card-component>
+  <header class="mx"><note-icon></note-icon><h1>Notes</h1></header>
+  <custom-input-component class="mx search-input" placeholder='Search notes...' class="search-input" id='search-input'>
+    <magnifying-glass-icon class="search-input-icon" slot='prepend-element'></maginfying-glass-icon>
+  </custom-input-component>
+  <custom-button-component class="add-new-note-btn" id='add-new-note'>Add New</custom-button-component>
+  <div id="notes-container"></div>
   
-  
- 
 `;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
+const notesContainer = mainView?.querySelector('#notes-container');
+
+const render = () => {
+  const visibleNotes = state.filteredNotes.length
+    ? state.filteredNotes.reduce((notesHtml, currentNote) => {
+        const newNote = `<note-card-component 
+        id='${currentNote.id}'
+        title='${currentNote.title}'
+        description='${currentNote.description}'
+        createdAt='${currentNote.createdAt}'
+        }'></note-card-component>`;
+        return `${notesHtml} ${newNote}
+        `;
+      }, ``)
+    : `<hello-world></hello-world>`;
+  if (notesContainer) notesContainer.innerHTML = visibleNotes;
+};
+
+const defaultState: State = {
+  filter: '',
+  notes: [],
+  filteredNotes: [],
+};
+
+const state = new Proxy<State>(defaultState, {
+  get(target, prop, receiver) {
+    if (prop === 'filteredNotes') {
+      return target.notes.filter((note) => {
+        return (
+          note.title.includes(target.filter) ||
+          note.description.includes(target.filter)
+        );
+      });
+    }
+    return Reflect.get(target, prop, receiver);
+  },
+  set(target, prop, value, receiver) {
+    const result = Reflect.set(target, prop, value, receiver);
+    if (prop === 'filter' || prop === 'notes') {
+      render();
+    }
+    return result;
+  },
+});
+
+const addNote = (note: Note) => {
+  const newNotes = [...state.notes, note];
+  state.notes = newNotes;
+};
+//TODO remove
+const createNotes = () => {
+  addNote(new Note('Cat 1', 'Description for note 1'));
+  addNote(new Note('Cat 2', 'Description for note 2'));
+  addNote(new Note('Dog 1', 'Description for note 3'));
+  addNote(new Note('Dog 2', 'Description for note 4'));
+  addNote(new Note('Turtle 1', 'Description for note 5'));
+};
+
+createNotes();
+
+const searchInput = mainView?.querySelector('#search-input');
+searchInput?.addEventListener('value-change', (e) => {
+  const customEvent = e as CustomEvent;
+  state.filter = customEvent.detail;
+});

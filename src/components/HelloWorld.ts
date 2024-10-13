@@ -2,7 +2,16 @@ class HelloWorld extends HTMLElement {
   constructor() {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
-    shadow.innerHTML = `<p>HelloWorld</p>`;
+    shadow.innerHTML = `
+    <style>
+      .btn-success {
+  background-color: var(--button-primary);
+}
+    </style>
+    
+    <p>HelloWorld</p>
+
+    `;
   }
 
   connectedCallback() {
