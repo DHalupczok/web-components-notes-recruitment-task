@@ -25,7 +25,7 @@ class CreateNoteComponent extends HTMLElement {
 
     const form = shadow.querySelector('note-form-component');
     if (form) {
-      form.addEventListener('save-changes', (e) => {
+      form.addEventListener('save-changes', () => {
         this.toggleEditMode();
       });
       form.addEventListener('cancel-changes', () => {

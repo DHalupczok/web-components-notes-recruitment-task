@@ -37,8 +37,8 @@ class CustomButtonComponent extends HTMLElement {
 
       button.outline {
         background-color: transparent;
-        border: 2px solid var(--button-primary);
-        color: var(--button-primary);
+        border: 2px solid var(--button-border);
+        font-weight: 700;
       }
     </style>`;
 

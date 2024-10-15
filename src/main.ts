@@ -11,6 +11,7 @@ import './components/CustomInputComponent.ts';
 import './components/NoteCardComponent.ts';
 import './components/NoteFormComponent.ts';
 import './components/CreateNoteComponent.ts';
+import './components/DeleteNoteModalComponent.ts';
 import { Note } from './model/note.model.ts';
 
 interface State {
@@ -26,7 +27,7 @@ mainView!.innerHTML = `
   </custom-input-component>
   <create-note-component></create-note-component>
   <div id="notes-container"></div>
-  
+  <div id="modal-container"></div>
 `;
 
 //For searching
@@ -48,7 +49,6 @@ const onAddNote = (e: Event) => {
   const customEvent = e as CustomEvent;
   const { title, body } = customEvent.detail;
   const newNote = new Note(title, body);
-  console.error('Próbuję dodać takie coś', customEvent.detail);
   addNote(newNote);
 };
 
@@ -65,7 +65,23 @@ const deleteNote = (noteId: string) => {
 
 const onDeleteNote = (e: Event) => {
   const customEvent = e as CustomEvent;
-  deleteNote(customEvent.detail);
+  openDeleteModal(customEvent.detail);
+};
+
+const deleteModalContainer = mainView?.querySelector('#modal-container');
+
+const openDeleteModal = (id: string) => {
+  if (deleteModalContainer) {
+    deleteModalContainer.innerHTML = `<delete-note-modal-component id="${id}"><delete-note-modal-component>`;
+    deleteModalContainer.addEventListener('delete-note-confirmed', (e) => {
+      const deleteEvent = e as CustomEvent;
+      deleteNote(deleteEvent.detail);
+      deleteModalContainer.innerHTML = '';
+    });
+    deleteModalContainer.addEventListener('delete-note-cancelled', () => {
+      deleteModalContainer.innerHTML = '';
+    });
+  }
 };
 
 //for updating notes
@@ -98,7 +114,7 @@ const addEventListeners = (notesContainer: Element) => {
 
 const notesContainer = mainView?.querySelector('#notes-container');
 
-const render = () => {
+const renderNotes = () => {
   if (!notesContainer) return;
   const visibleNotes = state.filteredNotes.length
     ? state.filteredNotes.reduce((notesHtml, currentNote) => {
@@ -137,7 +153,7 @@ const state = new Proxy<State>(defaultState, {
   set(target, prop, value, receiver) {
     const result = Reflect.set(target, prop, value, receiver);
     if (prop === 'filter' || prop === 'notes') {
-      render();
+      renderNotes();
     }
     return result;
   },
