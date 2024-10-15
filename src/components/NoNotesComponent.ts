@@ -1,4 +1,3 @@
-import './CustomInputComponent';
 import './CustomButtonComponent';
 import './icons/InfoIcon';
 import './icons/AddNoteIcon';

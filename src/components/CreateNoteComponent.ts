@@ -1,4 +1,4 @@
-import './CustomInputComponent';
+import './NoteFormComponent';
 import './CustomButtonComponent';
 
 class CreateNoteComponent extends HTMLElement {

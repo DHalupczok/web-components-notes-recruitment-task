@@ -1,15 +1,8 @@
 import './style.css';
-import './components/HelloWorld.ts';
-import './components/icons/InfoIcon.ts';
-import './components/icons/TrashIcon.ts';
 import './components/icons/MagnifyingGlassIcon.ts';
-import './components/icons/AddNoteIcon.ts';
 import './components/icons/NoteIcon.ts';
-import './components/icons/EditNoteIcon.ts';
-import './components/CustomButtonComponent.ts';
 import './components/CustomInputComponent.ts';
 import './components/NoteCardComponent.ts';
-import './components/NoteFormComponent.ts';
 import './components/CreateNoteComponent.ts';
 import './components/DeleteNoteModalComponent.ts';
 import './components/NoNotesComponent.ts';
@@ -47,8 +40,8 @@ const addNote = (note: Note) => {
 
 const onAddNote = (e: Event) => {
   const customEvent = e as CustomEvent;
-  const { title, body } = customEvent.detail;
-  const newNote = new Note(title, body);
+  const { title, description } = customEvent.detail;
+  const newNote = new Note(title, description);
   addNote(newNote);
 };
 
@@ -149,12 +142,11 @@ const defaultState: State = {
 const state = new Proxy<State>(defaultState, {
   get(target, prop, receiver) {
     if (prop === 'filteredNotes') {
-      return target.notes.filter((note) => {
-        return (
-          note.title.includes(target.filter) ||
-          note.description.includes(target.filter)
-        );
-      });
+      return target.notes.filter(
+        (note) =>
+          note.title.toLowerCase().includes(target.filter.toLowerCase()) ||
+          note.description.toLowerCase().includes(target.filter.toLowerCase()),
+      );
     }
     return Reflect.get(target, prop, receiver);
   },
