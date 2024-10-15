@@ -12,6 +12,7 @@ import './components/NoteCardComponent.ts';
 import './components/NoteFormComponent.ts';
 import './components/CreateNoteComponent.ts';
 import './components/DeleteNoteModalComponent.ts';
+import './components/NoNotesComponent.ts';
 import { Note } from './model/note.model.ts';
 
 interface State {
@@ -127,7 +128,7 @@ const renderNotes = () => {
         return `${notesHtml} ${newNote}
         `;
       }, ``)
-    : `<hello-world></hello-world>`;
+    : `<no-notes-component></no-notes-component>`;
   notesContainer.innerHTML = visibleNotes;
   addEventListeners(notesContainer);
 };
@@ -159,13 +160,4 @@ const state = new Proxy<State>(defaultState, {
   },
 });
 
-//TODO remove
-const createNotes = () => {
-  addNote(new Note('Cat 1', 'Description for note 1'));
-  addNote(new Note('Cat 2', 'Description for note 2'));
-  addNote(new Note('Dog 1', 'Description for note 3'));
-  addNote(new Note('Dog 2', 'Description for note 4'));
-  addNote(new Note('Turtle 1', 'Description for note 5'));
-};
-
-createNotes();
+renderNotes();
