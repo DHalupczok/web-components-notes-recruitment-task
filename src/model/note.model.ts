@@ -6,9 +6,14 @@ export class Note {
   private _title: string;
   private _description: string;
 
-  constructor(title: string, description: string) {
-    this.id = uuidv4();
-    this.createdAt = new Date();
+  constructor(
+    title: string,
+    description: string,
+    createdAt = new Date(),
+    id = uuidv4(),
+  ) {
+    this.id = id;
+    this.createdAt = createdAt;
     this._title = title;
     this._description = description;
   }

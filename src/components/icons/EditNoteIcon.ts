@@ -6,8 +6,8 @@ class EditNoteIcon extends HTMLElement {
         <style>
           :host {
             display: inline-block;
-            width: 12px;
-            height: 16px;
+            width: 100%;
+            height: 100%;
           }
           svg {
             width: 100%;

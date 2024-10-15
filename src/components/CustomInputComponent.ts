@@ -44,7 +44,6 @@ class CustomInputComponent extends HTMLElement {
         e.stopPropagation();
         const input = e.target as HTMLInputElement;
         const event = new CustomEvent('value-change', { detail: input.value });
-        console.log('Moje value to', input.value);
         this.dispatchEvent(event);
       });
     }
@@ -54,7 +53,7 @@ class CustomInputComponent extends HTMLElement {
     const styles = `
     <style>
      div:has(input), div:has(textarea) {
-     height: 100%;
+      height: 100%;
       display: flex;
       flex-direction: row;
       border-radius: 5px;
@@ -63,7 +62,7 @@ class CustomInputComponent extends HTMLElement {
       border: none;
       background-color: var(--secondary);
       color: var(--text-secondary);
-     }
+    }
 
     div:has(input:focus-visible), div:has(textarea:focus-visible) {
       background-color: var(--primary);
@@ -93,7 +92,7 @@ class CustomInputComponent extends HTMLElement {
       if (this.type === 'text')
         return `<input type='text' value='${this.value}' placeholder='${this.placeholder}'  ${disabled}/>`;
       if (this.type === 'textarea')
-        return `<textarea value='${this.value}' placeholder='${this.placeholder}'  ${disabled}/></textarea>`;
+        return `<textarea placeholder='${this.placeholder}'  ${disabled}/>${this.value}</textarea>`;
     };
     const body = `<div>
     <slot name='prepend-element'></slot>

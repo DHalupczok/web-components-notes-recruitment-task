@@ -9,6 +9,8 @@ import './components/icons/EditNoteIcon.ts';
 import './components/CustomButtonComponent.ts';
 import './components/CustomInputComponent.ts';
 import './components/NoteCardComponent.ts';
+import './components/NoteFormComponent.ts';
+import './components/CreateNoteComponent.ts';
 import { Note } from './model/note.model.ts';
 
 interface State {
@@ -22,14 +24,82 @@ mainView!.innerHTML = `
   <custom-input-component class="mx search-input" placeholder='Search notes...' class="search-input" id='search-input'>
     <magnifying-glass-icon class="search-input-icon" slot='prepend-element'></maginfying-glass-icon>
   </custom-input-component>
-  <custom-button-component class="add-new-note-btn" id='add-new-note'>Add New</custom-button-component>
+  <create-note-component></create-note-component>
   <div id="notes-container"></div>
   
 `;
 
+//For searching
+
+const searchInput = mainView?.querySelector('#search-input');
+searchInput?.addEventListener('value-change', (e) => {
+  const customEvent = e as CustomEvent;
+  state.filter = customEvent.detail;
+});
+
+//For creating new notes
+
+const addNote = (note: Note) => {
+  const newNotes = [...state.notes, note];
+  state.notes = newNotes;
+};
+
+const onAddNote = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  const { title, body } = customEvent.detail;
+  const newNote = new Note(title, body);
+  console.error('Próbuję dodać takie coś', customEvent.detail);
+  addNote(newNote);
+};
+
+const newNoteContainer = mainView?.querySelector('create-note-component');
+if (newNoteContainer) {
+  newNoteContainer.addEventListener('save-changes', onAddNote);
+}
+
+//for deleting notes
+
+const deleteNote = (noteId: string) => {
+  state.notes = state.notes.filter((note) => note.id !== noteId);
+};
+
+const onDeleteNote = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  deleteNote(customEvent.detail);
+};
+
+//for updating notes
+
+const updateNote = (updatedNote: Note) => {
+  const noteIndex = state.notes.findIndex((note) => note.id === updatedNote.id);
+  if (noteIndex !== -1) {
+    const newNotes = [...state.notes];
+    newNotes[noteIndex] = updatedNote;
+    state.notes = newNotes;
+  }
+};
+
+const onUpdateNote = (e: Event) => {
+  const customEvent = e as CustomEvent;
+  updateNote(customEvent.detail);
+};
+
+//For notes list
+
+const addEventListeners = (notesContainer: Element) => {
+  const noteComponents = notesContainer.querySelectorAll('note-card-component');
+  if (noteComponents.length) {
+    noteComponents.forEach((noteComponent) => {
+      noteComponent.addEventListener('delete-note', onDeleteNote);
+      noteComponent.addEventListener('update-note', onUpdateNote);
+    });
+  }
+};
+
 const notesContainer = mainView?.querySelector('#notes-container');
 
 const render = () => {
+  if (!notesContainer) return;
   const visibleNotes = state.filteredNotes.length
     ? state.filteredNotes.reduce((notesHtml, currentNote) => {
         const newNote = `<note-card-component 
@@ -42,7 +112,8 @@ const render = () => {
         `;
       }, ``)
     : `<hello-world></hello-world>`;
-  if (notesContainer) notesContainer.innerHTML = visibleNotes;
+  notesContainer.innerHTML = visibleNotes;
+  addEventListeners(notesContainer);
 };
 
 const defaultState: State = {
@@ -72,10 +143,6 @@ const state = new Proxy<State>(defaultState, {
   },
 });
 
-const addNote = (note: Note) => {
-  const newNotes = [...state.notes, note];
-  state.notes = newNotes;
-};
 //TODO remove
 const createNotes = () => {
   addNote(new Note('Cat 1', 'Description for note 1'));
@@ -86,9 +153,3 @@ const createNotes = () => {
 };
 
 createNotes();
-
-const searchInput = mainView?.querySelector('#search-input');
-searchInput?.addEventListener('value-change', (e) => {
-  const customEvent = e as CustomEvent;
-  state.filter = customEvent.detail;
-});
