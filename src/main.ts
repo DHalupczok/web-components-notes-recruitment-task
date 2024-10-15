@@ -26,7 +26,6 @@ mainView!.innerHTML = `
   <custom-input-component class="mx search-input" placeholder='Search notes...' class="search-input" id='search-input'>
     <magnifying-glass-icon class="search-input-icon" slot='prepend-element'></maginfying-glass-icon>
   </custom-input-component>
-  <create-note-component></create-note-component>
   <div id="notes-container"></div>
   <div id="modal-container"></div>
 `;
@@ -52,11 +51,6 @@ const onAddNote = (e: Event) => {
   const newNote = new Note(title, body);
   addNote(newNote);
 };
-
-const newNoteContainer = mainView?.querySelector('create-note-component');
-if (newNoteContainer) {
-  newNoteContainer.addEventListener('save-changes', onAddNote);
-}
 
 //for deleting notes
 
@@ -104,6 +98,17 @@ const onUpdateNote = (e: Event) => {
 //For notes list
 
 const addEventListeners = (notesContainer: Element) => {
+  const newNoteContainer = notesContainer.querySelector(
+    'create-note-component',
+  );
+  if (newNoteContainer) {
+    newNoteContainer.addEventListener('save-changes', onAddNote);
+  }
+
+  const noNotesComponent = notesContainer.querySelector('no-notes-component');
+  if (noNotesComponent) {
+    noNotesComponent.addEventListener('save-changes', onAddNote);
+  }
   const noteComponents = notesContainer.querySelectorAll('note-card-component');
   if (noteComponents.length) {
     noteComponents.forEach((noteComponent) => {
@@ -118,18 +123,20 @@ const notesContainer = mainView?.querySelector('#notes-container');
 const renderNotes = () => {
   if (!notesContainer) return;
   const visibleNotes = state.filteredNotes.length
-    ? state.filteredNotes.reduce((notesHtml, currentNote) => {
-        const newNote = `<note-card-component 
+    ? `
+    <create-note-component></create-note-component>
+    ${state.filteredNotes.reduce((notesHtml, currentNote) => {
+      const newNote = `<note-card-component 
         id='${currentNote.id}'
         title='${currentNote.title}'
         description='${currentNote.description}'
         createdAt='${currentNote.createdAt}'
         }'></note-card-component>`;
-        return `${notesHtml} ${newNote}
+      return `${notesHtml} ${newNote}
         `;
-      }, ``)
+    }, ``)}`
     : `<no-notes-component></no-notes-component>`;
-  notesContainer.innerHTML = visibleNotes;
+  notesContainer.innerHTML = `${visibleNotes}`;
   addEventListeners(notesContainer);
 };
 
